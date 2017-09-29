@@ -1,4 +1,5 @@
 import numpy as np
+import sys
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.cluster import k_means
@@ -37,7 +38,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 
         self.boundaries = np.round(self.boundaries)
         print(self.boundaries)
-        print(np.histogram(X[i, :], bins=self.boundaries, density=False)[0])
+        sys.stdout.flush()
 
         return self
 
