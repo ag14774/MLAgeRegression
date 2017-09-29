@@ -37,6 +37,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 
         self.boundaries = np.round(self.boundaries)
         print(self.boundaries)
+        print(np.histogram(X[i, :], bins=self.boundaries, density=False)[0])
 
         return self
 
