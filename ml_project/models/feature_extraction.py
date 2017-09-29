@@ -15,7 +15,6 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.random_state = random_state
         self.boundaries = None
 
-
     def fit(self, X, y=None):
         X = check_array(X)
         n_samples, n_features = X.shape
