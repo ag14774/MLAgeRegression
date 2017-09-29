@@ -7,6 +7,8 @@ dependencies:
   - gitpython
   - flake8
   - matplotlib
+  - readline
+  - ncurses
   - pip=9.0.1
   - pip:
     - git+https://gitlab.vis.ethz.ch/vwegmayr/sumatra.git
