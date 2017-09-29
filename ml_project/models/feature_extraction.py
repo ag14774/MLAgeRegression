@@ -15,11 +15,6 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.random_state = random_state
         self.boundaries = None
 
-    def _find_shade(self, value):
-        for idx in range(1, len(self.boundaries)):
-            if value < self.boundaries[idx]:
-                return idx - 1
-        return len(self.boundaries) - 1
 
     def fit(self, X, y=None):
         X = check_array(X)
@@ -36,9 +31,10 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             res[idx, :] = np.ravel(temp)
 
         res = np.sort(np.round(np.mean(res, axis=0)))
-        self.boundaries = np.zeros(self.n_shades)
+        self.boundaries = np.zeros(self.n_shades + 1)
         for i in range(1, self.n_shades):
             self.boundaries[i] = (res[i - 1] + res[i]) / 2
+        self.boundaries[self.n_shades] = 999999999
 
         self.boundaries = np.round(self.boundaries)
         print(self.boundaries)
@@ -50,7 +46,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         X = check_array(X)
         n_samples, n_features = X.shape
         X_new = [
-            np.bincount([self._find_shade(v) for v in X[i, :]])
+            np.histogram(X[i, :], bins=self.boundaries, density=False)[0]
             for i in range(n_samples)
         ]
 
