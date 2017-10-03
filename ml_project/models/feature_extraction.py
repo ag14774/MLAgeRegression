@@ -30,7 +30,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             temp = MiniBatchKMeans(
                 n_clusters=self.n_shades,
                 batch_size=10000).fit(X_subset)
-            print("test " + temp.__dict__)
+            print(temp.__dict__)
             sys.stdout.flush()
             res[idx, :] = np.ravel(temp)
 
