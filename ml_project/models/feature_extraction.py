@@ -2,7 +2,7 @@ import sys
 
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.cluster import KMeans
+from sklearn.cluster import MiniBatchKMeans
 from sklearn.utils import check_random_state
 from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import check_array, check_is_fitted
@@ -33,7 +33,8 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         res = np.zeros((self.n_rows, self.n_shades))
         for idx, i in enumerate(sample_indices):
             X_subset = np.reshape(X[i], (-1, 1))
-            temp = KMeans(n_clusters=self.n_shades).fit(X_subset)
+            temp = MiniBatchKMeans(
+                n_clusters=self.n_shades, batch_size=1000).fit(X_subset)
             res[idx, :] = np.ravel(temp.cluster_centers_)
 
         res = np.sort(np.round(np.mean(res, axis=0)))
