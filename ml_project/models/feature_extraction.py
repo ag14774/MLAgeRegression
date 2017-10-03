@@ -17,7 +17,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.boundaries = None
 
     def fit(self, X, y=None):
-        X = check_array(X)
+        # X = check_array(X)
         n_samples, n_features = X.shape
 
         random_state = check_random_state(self.random_state)
@@ -44,7 +44,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         check_is_fitted(self, ["boundaries"])
-        X = check_array(X)
+        # X = check_array(X)
         n_samples, n_features = X.shape
         X = np.appy_along_axis(self.np_histogram, 1, X,
                                {"bins": self.boundaries,
