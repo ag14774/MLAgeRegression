@@ -35,6 +35,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         for i in range(1, self.n_shades):
             self.boundaries[i] = (res[i - 1] + res[i]) / 2
         self.boundaries[self.n_shades] = 999999999
+        self.boundaried[0] = 1
 
         self.boundaries = np.round(self.boundaries)
         print(self.boundaries)
@@ -46,9 +47,16 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         check_is_fitted(self, ["boundaries"])
         X = check_array(X)
         n_samples, n_features = X.shape
-        X_new = [
-            np.histogram(X[i, :], bins=self.boundaries, density=False)[0]
-            for i in range(n_samples)
-        ]
+        X = np.appy_along_axis(self.np_histogram, 1, X,
+                               {"bins": self.boundaries,
+                                "density": False})
 
-        return X_new
+        return X
+
+    def np_histogram(arr,
+                     bins=10,
+                     range=None,
+                     normed=False,
+                     weights=None,
+                     density=None):
+        return np.histogram(arr, bins, range, normed, weights, density)[0]
