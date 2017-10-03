@@ -31,7 +31,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
                 n_clusters=self.n_shades, batch_size=10000).fit(X_subset)
             print(temp)
             sys.stdout.flush()
-            res[idx, :] = np.ravel(temp)
+            # res[idx, :] = np.ravel(temp)
 
         res = np.sort(np.round(np.mean(res, axis=0)))
         self.boundaries = np.zeros(self.n_shades + 1)
