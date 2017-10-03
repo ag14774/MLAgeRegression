@@ -18,15 +18,14 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 
     def fit(self, X, y=None):
         # X = check_array(X)
-        n_samples, n_features = X.shape
+        n_samples = X.shape
 
         random_state = check_random_state(self.random_state)
         sample_indices = sample_without_replacement(
             n_samples, self.n_rows, random_state=random_state)
         res = np.zeros((self.n_rows, self.n_shades))
         for idx, i in enumerate(sample_indices):
-            X_subset = X[i, :]
-            X_subset = np.reshape(X_subset, (n_features, 1))
+            X_subset = X[i]
             temp = k_means(X_subset, self.n_shades)[0]
             res[idx, :] = np.ravel(temp)
 
@@ -45,17 +44,10 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         check_is_fitted(self, ["boundaries"])
         # X = check_array(X)
-        n_samples, n_features = X.shape
-        X = np.appy_along_axis(self.np_histogram, 1, X,
-                               {"bins": self.boundaries,
-                                "density": False})
+        X = [
+            np.histogram(row, bins=self.boundaries, density=False)[0]
+            for row in X
+        ]
+        X = np.array(X)
 
         return X
-
-    def np_histogram(arr,
-                     bins=10,
-                     range=None,
-                     normed=False,
-                     weights=None,
-                     density=None):
-        return np.histogram(arr, bins, range, normed, weights, density)[0]
