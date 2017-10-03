@@ -35,9 +35,9 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         X = check_array(X)
         mbk = MiniBatchKMeans(n_clusters=self.n_shades, batch_size=1000)
         X = np.apply_along_axis(runKmeans, 1, X, {"mbk": mbk})
-        print(X.shape)
         X = np.apply_along_axis(np.bincount, 1, X,
                                 {"minlength": self.n_shades})
+        print("X after bincount: ")
         print(X)
         sys.stdout.flush()
         X = np.array(X)
