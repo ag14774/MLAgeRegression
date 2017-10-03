@@ -8,6 +8,11 @@ from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import check_array, check_is_fitted
 
 
+def runKmeans(Xrow, mbk):
+    Xrow = np.reshape(Xrow, (-1, 1))
+    return mbk["mbk"].fit_predict(Xrow)
+
+
 class ShadeExtraction(BaseEstimator, TransformerMixin):
     """Count how many pixels fall in each shade category"""
 
@@ -23,39 +28,16 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 #ALSO TRY SPREAD MATRIX WITH LOWER EPS
 
     def fit(self, X, y=None):
-        X = check_array(X)
-        n_samples, n_features = X.shape
-        print("Shades: " + str(self.n_shades))
-        sys.stdout.flush()
-        random_state = check_random_state(self.random_state)
-        sample_indices = sample_without_replacement(
-            n_samples, self.n_rows, random_state=random_state)
-        res = np.zeros((self.n_rows, self.n_shades))
-        for idx, i in enumerate(sample_indices):
-            X_subset = np.reshape(X[i], (-1, 1))
-            temp = MiniBatchKMeans(
-                n_clusters=self.n_shades, batch_size=1000).fit(X_subset)
-            res[idx, :] = np.ravel(temp.cluster_centers_)
-
-        res = np.sort(np.round(np.mean(res, axis=0)))
-        self.boundaries = np.zeros(self.n_shades + 1)
-        for i in range(1, self.n_shades):
-            self.boundaries[i] = (res[i - 1] + res[i]) / 2
-        self.boundaries[self.n_shades] = 999999999
-
-        self.boundaries = np.round(self.boundaries)
-        print(self.boundaries)
-        sys.stdout.flush()
-
         return self
 
     def transform(self, X, y=None):
         check_is_fitted(self, ["boundaries"])
         X = check_array(X)
-        X = [
-            np.histogram(row, bins=self.boundaries, density=False)[0]
-            for row in X
-        ]
+        mbk = MiniBatchKMeans(n_clusters=self.n_shades, batch_size=1000)
+        X = np.apply_along_axis(runKmeans, 1, X, {"mbk": mbk})
+        X = np.apply_along_axis(np.bincount, 1, X)
+        print(X)
+        sys.stdout.flush()
         X = np.array(X)
 
         return X
