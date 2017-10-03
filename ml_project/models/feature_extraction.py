@@ -26,8 +26,6 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         res = np.zeros((self.n_rows, self.n_shades))
         for idx, i in enumerate(sample_indices):
             X_subset = np.reshape(X[i], (-1, 1))
-            print(X_subset.shape)
-            print(X_subset)
             temp = k_means(X_subset, self.n_shades)[0]
             res[idx, :] = np.ravel(temp)
 

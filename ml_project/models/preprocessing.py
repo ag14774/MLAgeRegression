@@ -18,6 +18,4 @@ class RemoveZeros(BaseEstimator, TransformerMixin):
     def transform(self, X, y=None):
         X = check_array(X)
         X = np.array([self.removeZerosRow(X[i, :]) for i in range(X.shape[0])])
-        print(X)
-        print(X.shape)
         return X
