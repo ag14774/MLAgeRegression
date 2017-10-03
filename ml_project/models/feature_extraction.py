@@ -35,7 +35,6 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         for i in range(1, self.n_shades):
             self.boundaries[i] = (res[i - 1] + res[i]) / 2
         self.boundaries[self.n_shades] = 999999999
-        self.boundaried[0] = 1
 
         self.boundaries = np.round(self.boundaries)
         print(self.boundaries)
