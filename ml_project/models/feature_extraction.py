@@ -23,7 +23,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         X = check_array(X)
         n_samples, n_features = X.shape
-        print("Shades: " + self.n_shades)
+        print("Shades: " + str(self.n_shades))
         sys.stdout.flush()
         random_state = check_random_state(self.random_state)
         sample_indices = sample_without_replacement(

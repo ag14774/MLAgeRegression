@@ -13,6 +13,6 @@ class Debugger(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        print(X.shape)
+        print("Shape of X: " + str(X.shape))
         sys.stdout.flush()
         return X
