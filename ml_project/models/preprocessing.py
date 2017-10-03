@@ -1,21 +1,51 @@
 import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_array
+from sklearn.decomposition import IncrementalPCA
+import sys
 
 
-class RemoveZeros(BaseEstimator, TransformerMixin):
-    """Count how many pixels fall in each shade category"""
+class IncrementalPCAInChunks(BaseEstimator, TransformerMixin):
+    """docstring"""
 
-    def __init__(self):
-        pass
+    def __init__(self,
+                 row_chunk=50,
+                 n_components=None,
+                 whiten=False,
+                 copy=True,
+                 batch_size=None):
+        self.n_components = n_components
+        self.whiten = whiten
+        self.copy = copy
+        self.batch_size = batch_size
+        self.row_chunk = row_chunk
+
+    def fit(self, X, y=None):
+        X = check_array(X)
+        n_samples, n_features = X.shape
+        ipca = IncrementalPCA(self.n_components, self.whiten, self.copy,
+                              self.batch_size)
+
+        for i in range(0, n_samples // self.row_chunk):
+            ipca.partial_fit(X[i * self.row_chunk:(i + 1) * self.row_chunk])
+        return self
+
+    def transform(self, X, y=None):
+        X = check_array(X)
+        # TODO: FINISH
+        return X
+
+
+class Flatten(BaseEstimator, TransformerMixin):
+    """Flatten"""
+    def __init__(self, dim=2):
+        self.dim = dim
 
     def fit(self, X, y=None):
         return self
 
-    def removeZerosRow(self, Xrow):
-        return Xrow[np.nonzero(Xrow)]
-
     def transform(self, X, y=None):
         X = check_array(X)
-        X = np.array([self.removeZerosRow(X[i, :]) for i in range(X.shape[0])])
-        return X
+        X = X.reshape(-1, 176, 208, 176)  # Bad practice: hard-coded dimensions
+        X = X.mean(axis=self.dim)
+        return X.reshape(X.shape[0], -1)
