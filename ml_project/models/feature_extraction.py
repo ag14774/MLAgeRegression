@@ -28,7 +28,9 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         for idx, i in enumerate(sample_indices):
             X_subset = np.reshape(X[i], (-1, 1))
             temp = MiniBatchKMeans(
-                n_clusters=self.n_shades, batch_size=10000).fit(X_subset)[0]
+                n_clusters=self.n_shades, batch_size=10000).fit(X_subset)
+            print(temp)
+            sys.stdout.flush()
             res[idx, :] = np.ravel(temp)
 
         res = np.sort(np.round(np.mean(res, axis=0)))
