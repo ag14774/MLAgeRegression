@@ -1,42 +1,42 @@
 {
-  "label_generator": "timestamp",
   "data_store": {
-    "type": "sumatra.datastore.filesystem.FileSystemDataStore",
-    "root": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project/data"
+    "root": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project/data",
+    "type": "sumatra.datastore.filesystem.FileSystemDataStore"
   },
-  "input_datastore": {
-    "type": "sumatra.datastore.filesystem.FileSystemDataStore",
-    "root": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project/data"
-  },
-  "default_launch_mode": {
-    "type": "sumatra.launch.SerialLaunchMode",
-    "working_directory": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project",
-    "options": null
-  },
-  "default_main_file": "run.py",
-  "allow_command_line_parameters": true,
-  "plugins": [],
-  "data_label": "cmdline",
   "sumatra_version": "0.8dev",
+  "label_generator": "timestamp",
+  "default_main_file": "run.py",
+  "name": "ml_project",
   "default_executable": {
-    "type": "sumatra.programs.PythonExecutable",
-    "name": "Python",
     "version": "3.5.3",
     "options": "",
+    "type": "sumatra.programs.PythonExecutable",
+    "name": "Python",
     "path": "/home/ageorgiou/miniconda3/envs/ml_project/bin/python"
   },
-  "on_changed": "error",
-  "name": "ml_project",
-  "_most_recent": "20171003-214237",
   "timestamp_format": "%Y%m%d-%H%M%S",
-  "description": "",
+  "default_launch_mode": {
+    "working_directory": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project",
+    "options": null,
+    "type": "sumatra.launch.SerialLaunchMode"
+  },
+  "allow_command_line_parameters": true,
   "default_repository": {
-    "type": "sumatra.versioncontrol._git.GitRepository",
     "upstream": "https://gitlab.vis.ethz.ch/vwegmayr/ml-project.git",
+    "type": "sumatra.versioncontrol._git.GitRepository",
     "url": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project"
   },
   "record_store": {
     "type": "sumatra.recordstore.django_store.DjangoRecordStore",
     "db_file": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project/.smt/records"
-  }
+  },
+  "_most_recent": "20171003-215332",
+  "plugins": [],
+  "input_datastore": {
+    "root": "/media/ageorgiou/DATA/ETH/autumn2017/MachineLearning/projects/project1/ml-project/data",
+    "type": "sumatra.datastore.filesystem.FileSystemDataStore"
+  },
+  "description": "",
+  "data_label": "cmdline",
+  "on_changed": "error"
 }
