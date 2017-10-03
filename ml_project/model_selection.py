@@ -1,6 +1,7 @@
-from sklearn.model_selection import GridSearchCV
-import pandas as pd
 from os.path import normpath
+
+import pandas as pd
+from sklearn.model_selection import GridSearchCV
 
 
 class GridSearchCV(GridSearchCV):

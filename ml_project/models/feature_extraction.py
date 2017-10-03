@@ -1,10 +1,11 @@
-import numpy as np
 import sys
+
+import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
-from sklearn.utils.validation import check_array, check_is_fitted
 from sklearn.cluster import MiniBatchKMeans
 from sklearn.utils import check_random_state
 from sklearn.utils.random import sample_without_replacement
+from sklearn.utils.validation import check_array, check_is_fitted
 
 
 class ShadeExtraction(BaseEstimator, TransformerMixin):
@@ -17,8 +18,8 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.boundaries = None
 
     def fit(self, X, y=None):
-        # X = check_array(X)
-        n_samples = X.shape[0]
+        X = check_array(X)
+        n_samples, n_features = X.shape
 
         random_state = check_random_state(self.random_state)
         sample_indices = sample_without_replacement(
@@ -44,7 +45,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
 
     def transform(self, X, y=None):
         check_is_fitted(self, ["boundaries"])
-        # X = check_array(X)
+        X = check_array(X)
         X = [
             np.histogram(row, bins=self.boundaries, density=False)[0]
             for row in X
