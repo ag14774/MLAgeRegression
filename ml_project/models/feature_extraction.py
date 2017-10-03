@@ -19,11 +19,8 @@ def runKmeans(Xrow, args):
 class ShadeExtraction(BaseEstimator, TransformerMixin):
     """Count how many pixels fall in each shade category"""
 
-    def __init__(self, n_shades=10, n_rows=3, random_state=None):
+    def __init__(self, n_shades=10):
         self.n_shades = n_shades
-        self.n_rows = n_rows
-        self.random_state = random_state
-        self.boundaries = None
 
 
 #NEXT STEPS: USE KMEANS INSTEAD OF GAUSSIAN
@@ -34,9 +31,12 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        check_is_fitted(self, ["boundaries"])
         X = check_array(X)
-        mbk = MiniBatchKMeans(n_clusters=self.n_shades, batch_size=1000)
+        mbk = MiniBatchKMeans(
+            n_clusters=self.n_shades,
+            batch_size=1000,
+            n_init=5,
+            reassignment_ratio=0.02)
         X = np.apply_along_axis(runKmeans, 1, X,
                                 {"mbk": mbk,
                                  "minlength": self.n_shades})
