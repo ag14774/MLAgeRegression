@@ -12,9 +12,12 @@ class RemoveZeros(BaseEstimator, TransformerMixin):
     def fit(self, X, y=None):
         return self
 
+    def removeZerosRow(self, Xrow):
+        return Xrow[np.nonzero(Xrow)]
+
     def transform(self, X, y=None):
         X = check_array(X)
-        X = np.array([X[i, np.nonzero(X[i, :])] for i in range(X.shape[0])])
+        X = np.array([self.removeZerosRow(X[i, :]) for i in range(X.shape[0])])
         print(X)
         print(X.shape)
         return X
