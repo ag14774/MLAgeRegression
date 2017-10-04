@@ -32,33 +32,38 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.boundaries = None
 
     def fit(self, X, y=None):
-        X = check_array(X)
-        n_samples, n_features = X.shape
-        mbk = MiniBatchKMeans(
-            n_clusters=self.n_shades,
-            batch_size=1000,
-            n_init=5,
-            reassignment_ratio=0.02)
-        sample_rows = sample_without_replacement(n_samples, self.n_rows)
-        X_subset = X[sample_rows]
-        X_subset = np.apply_along_axis(calcBinBoundaries, 1, X_subset,
-                                       {"mbk": mbk})
-        averaged_centers = np.mean(X_subset, axis=0)
-        print("Averaged centers", averaged_centers)
-        sys.stdout.flush()
-        self.boundaries = np.zeros(self.n_shades + 1)
-        for i in range(1, self.n_shades):
-            self.boundaries[i] = (
-                averaged_centers[i - 1] + averaged_centers[i]) / 2
-        self.boundaries[self.n_shades] = 99999999999
-        self.boundaries[0] = 1
-        self.boundaries = np.sort(np.round(self.boundaries))
-        print("Final boundaries: ", self.boundaries)
-        sys.stdout.flush()
+        if(self.n_rows > 0):
+            X = check_array(X)
+            n_samples, n_features = X.shape
+            mbk = MiniBatchKMeans(
+                n_clusters=self.n_shades,
+                batch_size=1000,
+                n_init=5,
+                reassignment_ratio=0.02)
+            sample_rows = sample_without_replacement(n_samples, self.n_rows)
+            X_subset = X[sample_rows]
+            X_subset = np.apply_along_axis(calcBinBoundaries, 1, X_subset,
+                                           {"mbk": mbk})
+            averaged_centers = np.mean(X_subset, axis=0)
+            print("Averaged centers", averaged_centers)
+            sys.stdout.flush()
+            self.boundaries = np.zeros(self.n_shades + 1)
+            for i in range(1, self.n_shades):
+                self.boundaries[i] = (
+                    averaged_centers[i - 1] + averaged_centers[i]) / 2
+            self.boundaries[self.n_shades] = 99999999999
+            self.boundaries[0] = 1
+            self.boundaries = np.sort(np.round(self.boundaries))
+            print("Final boundaries: ", self.boundaries)
+            sys.stdout.flush()
         return self
 
     def transform(self, X, y=None):
-        check_is_fitted(self, ["boundaries"])
+        if(self.n_rows > 0):
+            check_is_fitted(self, ["boundaries"])
+            bins = self.boundaries
+        else:
+            bins = self.n_shades
         print("Shape before bin count: ", X.shape)
         sys.stdout.flush()
         X = check_array(X)
@@ -66,11 +71,10 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             doHistStartFromOne,
             1,
             X,
-            bins=self.boundaries,
+            bins=bins,
             density=self.density)
         print("X after bincount: ")
         print(X)
         sys.stdout.flush()
         X = np.array(X)
-
         return X
