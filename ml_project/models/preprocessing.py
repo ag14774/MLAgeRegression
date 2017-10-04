@@ -3,6 +3,7 @@ from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_array
 from sklearn.decomposition import IncrementalPCA
 from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import scale
 import sys
 
 
@@ -57,16 +58,18 @@ class StandardScalerTranspose(BaseEstimator, TransformerMixin):
         self.enabled = enabled
         self.with_std = with_std
         self.transpose = transpose
+        self.scaler = None
 
     def fit(self, X, y=None):
+        if(self.transpose is False and self.enabled):
+            self.scaler = StandardScaler(copy=False, with_std=self.with_std)
         return self
 
     def transform(self, X, y=None):
         if(self.enabled):
             X = check_array(X)
             if(self.transpose):
-                X = np.transpose(X)
-            StandardScaler(copy=False, with_std=self.with_std).fit_transform(X)
-            if(self.transpose):
-                X = np.transpose(X)
+                X = scale(X, axis=1, copy=False, with_std=self.with_std)
+            else:
+                X = self.scaler.transform(X)
             return X
