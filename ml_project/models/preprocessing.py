@@ -55,23 +55,19 @@ class Flatten(BaseEstimator, TransformerMixin):
 
 
 class StandardScalerTranspose(BaseEstimator, TransformerMixin):
-    def __init__(self, enabled=True, with_std=True, transpose=True):
+    def __init__(self, enabled=True, with_std=True):
         self.enabled = enabled
         self.with_std = with_std
-        self.transpose = transpose
         self.scaler = None
 
     def fit(self, X, y=None):
-        if (self.transpose is False and self.enabled):
+        if (self.enabled):
             self.scaler = StandardScaler(copy=False, with_std=self.with_std)
+            self.scaler.fit(X)
         return self
 
     def transform(self, X, y=None):
         if (self.enabled):
             X = check_array(X)
-            if (self.transpose):
-                X = np.apply_along_axis(
-                    scale, 1, X, copy=False, with_std=self.with_std)
-            else:
-                X = self.scaler.transform(X)
-            return X
+            X = self.scaler.transform(X)
+        return X
