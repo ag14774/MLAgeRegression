@@ -40,6 +40,7 @@ class IncrementalPCAInChunks(BaseEstimator, TransformerMixin):
 
 class Flatten(BaseEstimator, TransformerMixin):
     """Flatten"""
+
     def __init__(self, dim=2):
         self.dim = dim
 
@@ -61,15 +62,16 @@ class StandardScalerTranspose(BaseEstimator, TransformerMixin):
         self.scaler = None
 
     def fit(self, X, y=None):
-        if(self.transpose is False and self.enabled):
+        if (self.transpose is False and self.enabled):
             self.scaler = StandardScaler(copy=False, with_std=self.with_std)
         return self
 
     def transform(self, X, y=None):
-        if(self.enabled):
+        if (self.enabled):
             X = check_array(X)
-            if(self.transpose):
-                X = scale(X, axis=1, copy=False, with_std=self.with_std)
+            if (self.transpose):
+                X = np.apply_along_axis(
+                    scale, 1, X, copy=False, with_std=self.with_std)
             else:
                 X = self.scaler.transform(X)
             return X
