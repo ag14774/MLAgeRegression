@@ -11,9 +11,15 @@ from sklearn.utils.validation import check_array, check_is_fitted
 def calcBinBoundaries(Xrow, args):
     Xrow = np.reshape(Xrow, (-1, 1))
     args["mbk"].fit(Xrow)
-    print("Sample center", args["mbk"].cluster_centers_)
+    centers = np.sort(args["mbk"].cluster_centers_, axis=0)
+    print("Sample center", centers)
     sys.stdout.flush()
-    return np.sort(args["mbk"].cluster_centers_)
+    return centers
+
+
+def doHist(a, bins=10, range=None, normed=False, weights=None, density=None):
+    a, _ = np.histogram(a, bins, range, normed, weights, density)
+    return a
 
 
 class ShadeExtraction(BaseEstimator, TransformerMixin):
@@ -38,7 +44,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             batch_size=1000,
             n_init=5,
             reassignment_ratio=0.02)
-        sample_rows = sample_without_replacement(n_features, self.n_rows)
+        sample_rows = sample_without_replacement(n_samples, self.n_rows)
         X_subset = X[sample_rows]
         X_subset = np.apply_along_axis(calcBinBoundaries, 1, X_subset,
                                        {"mbk": mbk})
@@ -50,7 +56,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             self.boundaries[i] = (
                 averaged_centers[i - 1] + averaged_centers[i]) / 2
         self.boundaries[self.n_shades] = 99999999999
-        self.boundaries = np.round(self.boundaries)
+        self.boundaries = np.sort(np.round(self.boundaries))
         print("Final boundaries: ", self.boundaries)
         sys.stdout.flush()
         return self
@@ -61,7 +67,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         sys.stdout.flush()
         X = check_array(X)
         X = np.apply_along_axis(
-            np.histogram, 1, X, bins=self.boundaries, density=self.density)
+            doHist, 1, X, bins=self.boundaries, density=self.density)
         print("X after bincount: ")
         print(X)
         sys.stdout.flush()
