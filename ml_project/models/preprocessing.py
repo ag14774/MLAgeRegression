@@ -2,6 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_array
 from sklearn.decomposition import IncrementalPCA
+from sklearn.preprocessing import StandardScaler
 import sys
 
 
@@ -49,3 +50,23 @@ class Flatten(BaseEstimator, TransformerMixin):
         X = X.reshape(-1, 176, 208, 176)  # Bad practice: hard-coded dimensions
         X = X.mean(axis=self.dim)
         return X.reshape(X.shape[0], -1)
+
+
+class StandardScalerTranspose(BaseEstimator, TransformerMixin):
+    def __init__(self, enabled=True, with_std=True, transpose=True):
+        self.enabled = enabled
+        self.with_std = with_std
+        self.transpose = transpose
+
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X, y=None):
+        if(self.enabled):
+            X = check_array(X)
+            if(self.transpose):
+                X = np.transpose(X)
+            StandardScaler(copy=False, with_std=self.with_std).fit_transform(X)
+            if(self.transpose):
+                X = np.transpose(X)
+            return X

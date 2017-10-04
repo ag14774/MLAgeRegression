@@ -17,8 +17,8 @@ def calcBinBoundaries(Xrow, args):
     return centers
 
 
-def doHist(a, bins=10, range=None, normed=False, weights=None, density=None):
-    a, _ = np.histogram(a, bins, range, normed, weights, density)
+def doHistStartFromOne(a, bins=10, normed=False, weights=None, density=None):
+    a, _ = np.histogram(a, bins, (1, a.max()), normed, weights, density)
     return a
 
 
@@ -30,11 +30,6 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         self.n_rows = n_rows
         self.density = density
         self.boundaries = None
-
-
-#NEXT STEPS: USE KMEANS INSTEAD OF GAUSSIAN
-#OR USE GAUSSIAN AND THEN KMEANS
-#ALSO TRY SPREAD MATRIX WITH LOWER EPS
 
     def fit(self, X, y=None):
         X = check_array(X)
@@ -56,6 +51,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
             self.boundaries[i] = (
                 averaged_centers[i - 1] + averaged_centers[i]) / 2
         self.boundaries[self.n_shades] = 99999999999
+        self.boundaries[0] = 1
         self.boundaries = np.sort(np.round(self.boundaries))
         print("Final boundaries: ", self.boundaries)
         sys.stdout.flush()
@@ -67,7 +63,11 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         sys.stdout.flush()
         X = check_array(X)
         X = np.apply_along_axis(
-            doHist, 1, X, bins=self.boundaries, density=self.density)
+            doHistStartFromOne,
+            1,
+            X,
+            bins=self.boundaries,
+            density=self.density)
         print("X after bincount: ")
         print(X)
         sys.stdout.flush()
