@@ -2,8 +2,7 @@ import numpy as np
 from sklearn.base import BaseEstimator, TransformerMixin
 from sklearn.utils.validation import check_array
 from sklearn.decomposition import IncrementalPCA
-from sklearn.preprocessing import StandardScaler
-from sklearn.preprocessing import scale
+from sklearn.preprocessing import minmax_scale
 import sys
 
 
@@ -55,18 +54,13 @@ class Flatten(BaseEstimator, TransformerMixin):
 
 
 class ScaleEachSample(BaseEstimator, TransformerMixin):
-    def __init__(self, enabled=True, with_std=True):
+    def __init__(self, enabled=True):
         self.enabled = enabled
-        self.with_std = with_std
 
     def fit(self, X, y=None):
         return self
 
     def transform(self, X, y=None):
         if (self.enabled):
-            means = np.mean(X, axis=1)
-            stds = np.std(X, axis=1)
-            X = X - means
-            if(self.with_std is True):
-                X = X / stds
+            X = minmax_scale(X, axis=1, copy=False)
         return X
