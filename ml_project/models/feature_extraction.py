@@ -52,8 +52,8 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
                 self.boundaries[i] = (
                     averaged_centers[i - 1] + averaged_centers[i]) / 2
             self.boundaries[self.n_shades] = 99999999999
-            self.boundaries[0] = 1
             self.boundaries = np.sort(np.round(self.boundaries))
+            self.boundaries[0] = 1
             print("Final boundaries: ", self.boundaries)
             sys.stdout.flush()
         return self
