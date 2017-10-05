@@ -6,6 +6,7 @@ from sklearn.cluster import MiniBatchKMeans
 from sklearn.utils import check_random_state
 from sklearn.utils.random import sample_without_replacement
 from sklearn.utils.validation import check_array, check_is_fitted
+from scipy.stats import binned_statistic
 
 
 def calcBinBoundaries(Xrow, args):
@@ -17,22 +18,23 @@ def calcBinBoundaries(Xrow, args):
     return centers
 
 
-def doHistStartFromOne(a, bins=10, normed=False, weights=None, density=None):
-    a, _ = np.histogram(a, bins, (1, a.max()), normed, weights, density)
+def doHistStartFromOne(a, bins=10, statistic='count'):
+    a = binned_statistic(a, a, statistic, bins, (1, a.max())).statistic
+    a = np.nan_to_num(a, False)
     return a
 
 
 class ShadeExtraction(BaseEstimator, TransformerMixin):
     """Count how many pixels fall in each shade category"""
 
-    def __init__(self, n_shades=10, n_rows=5, density=False):
+    def __init__(self, n_shades=10, n_rows=5, statistic='count'):
         self.n_shades = n_shades
         self.n_rows = n_rows
-        self.density = density
+        self.statistic = statistic
         self.boundaries = None
 
     def fit(self, X, y=None):
-        if(self.n_rows > 0):
+        if (self.n_rows > 0):
             X = check_array(X)
             n_samples, n_features = X.shape
             mbk = MiniBatchKMeans(
@@ -60,7 +62,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         return self
 
     def transform(self, X, y=None):
-        if(self.n_rows > 0):
+        if (self.n_rows > 0):
             check_is_fitted(self, ["boundaries"])
             bins = self.boundaries
         else:
@@ -69,11 +71,7 @@ class ShadeExtraction(BaseEstimator, TransformerMixin):
         sys.stdout.flush()
         X = check_array(X)
         X = np.apply_along_axis(
-            doHistStartFromOne,
-            1,
-            X,
-            bins=bins,
-            density=self.density)
+            doHistStartFromOne, 1, X, bins=bins, statistic=self.statistic)
         print("X after bincount: ")
         print(X)
         sys.stdout.flush()
