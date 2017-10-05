@@ -51,16 +51,3 @@ class Flatten(BaseEstimator, TransformerMixin):
         X = X.reshape(-1, 176, 208, 176)  # Bad practice: hard-coded dimensions
         X = X.mean(axis=self.dim)
         return X.reshape(X.shape[0], -1)
-
-
-class ScaleEachSample(BaseEstimator, TransformerMixin):
-    def __init__(self, enabled=True):
-        self.enabled = enabled
-
-    def fit(self, X, y=None):
-        return self
-
-    def transform(self, X, y=None):
-        if (self.enabled):
-            X = minmax_scale(X, axis=1, copy=False)
-        return X
