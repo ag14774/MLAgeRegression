@@ -1,0 +1,9 @@
+*.gz
+*.tar
+*.npy
+__pycache__/
+.kaggle-cli/
+data/
+.config.yaml
+.smt/
+.gitold
